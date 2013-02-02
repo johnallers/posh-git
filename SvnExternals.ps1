@@ -7,6 +7,11 @@ function SvnExt {
                 Set-Location $gitRoot.Parent.FullName
                 Write-Host
                 Write-Host " Directory: "(Get-Location)
+                if ($args[0] -eq "status") {
+                    Write-Host "   Command:  git"$args
+                    & git $args
+                    continue
+                }
                 Write-Host "   Command:  git svn"$args
                 & git svn $args
             }

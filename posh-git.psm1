@@ -8,7 +8,7 @@ Push-Location $psScriptRoot
 . .\GitPrompt.ps1
 . .\GitTabExpansion.ps1
 . .\TortoiseGit.ps1
-. .\SvnExt.ps1
+. .\SvnExternals.ps1
 Pop-Location
 
 if (!$Env:HOME) { $Env:HOME = "$Env:HOMEDRIVE$Env:HOMEPATH" }
