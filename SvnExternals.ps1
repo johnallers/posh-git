@@ -6,13 +6,13 @@ function SvnExt {
             if (Test-Path ($gitRoot.FullName + "\svn")) {
                 Set-Location $gitRoot.Parent.FullName
                 if ($svnExtSupportedCommands.git -Contains $args[0]) {
-                    DisplayCommandInfo("git", $args)
+                    Write-CommandInfoToHost("git", $args)
                     & git $args
                     continue
                 }
                 else {
                     if ($svnExtSupportedCommands.gitsvn -contains $args[0]) {
-                        DisplayCommandInfo("git svn", $args)
+                        Write-CommandInfoToHost("git svn", $args)
                         & git svn $args
                         continue
                     }
@@ -25,7 +25,7 @@ function SvnExt {
     }
 }
 
-function private:DisplayCommandInfo($cmd, $args){
+function Write-CommandInfoToHost($cmd, $args) {
     Write-Host
     Write-Host " Directory: "(Get-Location)
     Write-Host "   Command:" $cmd $args
