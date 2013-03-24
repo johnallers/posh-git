@@ -40,6 +40,7 @@ $svnExtSupportedCommands = @{
         )
     git = @(
         "status",
-        "checkout"
+        "checkout",
+	"branch"
         )
 }
