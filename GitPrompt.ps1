@@ -4,7 +4,7 @@
 $global:GitPromptSettings = New-Object PSObject -Property @{
     DefaultForegroundColor    = $Host.UI.RawUI.ForegroundColor
 
-    PathSeperator             = ([char]0x25BA).ToString()
+    PathSeperator             = (" " + ([char]0x25BA).ToString() + " ")
 	AheadIndicator            = ([char]0x25B2).ToString()
 	AddedIndicator            = "+"
 	
@@ -22,7 +22,10 @@ $global:GitPromptSettings = New-Object PSObject -Property @{
     RepositoriesInWhichToDisableFileStatus = @( ) # Array of repository paths
 
     EnableWindowTitle         = 'posh~git ~ '
-
+	KnownPaths                = @{
+									"dev" = "C:\development";
+									"~" = "$env:homedrive$env:homepath";
+								}
     Debug                     = $false
 }
 

@@ -16,17 +16,17 @@ function prompt {
     $Host.UI.RawUI.ForegroundColor = $GitPromptSettings.DefaultForegroundColor
 
 	$parts = $pwd.ProviderPath
-	$backgroundColor = [ConsoleColor]::Black
-	Write-Host ([System.String]::Join((([char]0x25BA).ToString()), $parts.Split([System.IO.Path]::DirectorySeparatorChar))) -nonewline -BackgroundColor $backgroundColor
+	$backgroundColor = $GitPromptSettings.PathBackgroundColor
+	Write-Host ([System.String]::Join($GitPromptSettings.PathSeperator, $parts.Split([System.IO.Path]::DirectorySeparatorChar))) -nonewline -BackgroundColor $backgroundColor
 
     Write-VcsStatus
 
     $global:LASTEXITCODE = $realLASTEXITCODE
 	$color = [ConsoleColor]::Magenta
 	if ($real) {
-		Write-Host (([char]0x25BA).ToString()) -NoNewLine -BackgroundColor $backgroundColor
+		Write-Host (" " + ([char]0x25BA).ToString()) -NoNewLine -BackgroundColor $backgroundColor
 	} else {
-		Write-Host (([char]0x25BA).ToString()) -NoNewLine -ForegroundColor $color -BackgroundColor $backgroundColor
+		Write-Host (" " + ([char]0x25BA).ToString()) -NoNewLine -ForegroundColor $color -BackgroundColor $backgroundColor
 	}
     return " "
 }
