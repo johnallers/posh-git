@@ -45,6 +45,7 @@ function Write-Prompt($Object, $ForegroundColor, $BackgroundColor = -1) {
 function Write-GitStatus($status) {
     $s = $global:GitPromptSettings
     if ($status -and $s) {
+		Write-Host $status
         Write-Prompt $s.PathSeperator -BackgroundColor $s.PathBackgroundColor -ForegroundColor $s.PathForegroundColor
         $branchBackgroundColor = $s.CleanBackgroundColor
 		$modifiers = " "
@@ -63,7 +64,7 @@ function Write-GitStatus($status) {
 			$modifiers = $modifiers + $s.AddedIndicator
 		}
 		if($s.EnableFileStatus -and $s.AheadBy -gt 0) {
-			$modifiers = $modifiers + $s.AheadIndicator
+			$modifiers = $modifiers + $s.AheadIndicator + " " + $s.AheadBy
 		}
 		if ($modifiers -eq " ") {
 			Write-Prompt ($status.Branch) -BackgroundColor $branchBackgroundColor -ForegroundColor $s.DefaultForegroundColor
