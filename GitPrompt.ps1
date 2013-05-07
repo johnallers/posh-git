@@ -61,7 +61,7 @@ function Write-GitStatus($status) {
 			  $branchBackgroundColor = $s.DirtyBackgroundColor
             }
 		}
-		if($s.HasUntracked) {
+		if($status.HasUntracked) {
 			$modifiers = $modifiers + $s.AddedIndicator
 		}
 		if ($modifiers -eq " ") {
