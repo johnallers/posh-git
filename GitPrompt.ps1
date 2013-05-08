@@ -7,6 +7,7 @@ $global:GitPromptSettings = New-Object PSObject -Property @{
     PathSeperator             = (" " + ([char]0x25BA).ToString() + " ")
 	AheadIndicator            = ([char]0x25B4).ToString()
 	AddedIndicator            = "+"
+	SubversionIndicator       = ([char]0x02E2).ToString()
 	
 	PathBackgroundColor       = [ConsoleColor]::Black
 	PathForegroundColor       = $Host.UI.RawUI.ForegroundColor
@@ -47,7 +48,10 @@ function Write-GitStatus($status) {
     if ($status -and $s) {
         Write-Prompt $s.PathSeperator -BackgroundColor $s.PathBackgroundColor -ForegroundColor $s.PathForegroundColor
         $branchBackgroundColor = $s.CleanBackgroundColor
-		$modifiers = " "
+		$modifiers = ""
+		if($s.EnableFileStatus -and $status.SvnRemote) {
+			$modifiers = $s.SubversionIndicator + $modifiers;
+		}
 		if($s.EnableFileStatus -and $status.AheadBy -gt 0) {
 			$modifiers = $modifiers + $s.AheadIndicator + $status.AheadBy
 		}
@@ -64,8 +68,8 @@ function Write-GitStatus($status) {
 		if($status.HasUntracked) {
 			$modifiers = $modifiers + $s.AddedIndicator
 		}
-		if ($modifiers -eq " ") {
-			Write-Prompt ($status.Branch) -BackgroundColor $branchBackgroundColor -ForegroundColor $s.DefaultForegroundColor
+		if ($modifiers -eq "") {
+			Write-Prompt ($status.Branch + " ") -BackgroundColor $branchBackgroundColor -ForegroundColor $s.DefaultForegroundColor
 		} else {
 			Write-Prompt ($status.Branch + $modifiers + " ") -BackgroundColor $branchBackgroundColor -ForegroundColor $s.DefaultForegroundColor
 		}

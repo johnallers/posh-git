@@ -107,6 +107,7 @@ function Get-GitStatus($gitDir = (Get-GitDirectory)) {
         $filesModified = @()
         $filesDeleted = @()
         $filesUnmerged = @()
+		$svnRemote = $false
 
         if($settings.EnableFileStatus -and !$(InDisabledRepository)) {
             dbg 'Getting status' $sw
@@ -114,6 +115,10 @@ function Get-GitStatus($gitDir = (Get-GitDirectory)) {
         } else {
             $status = @()
         }
+		if ($settings.EnableFileStatus -and !$(InDisabledRepository)) {
+			dbg 'Getting svn status' $sw
+			$svnRemote = Test-Path $gitDir\svn\.metadata -PathType Leaf
+		}
 
         dbg 'Parsing status' $sw
         $status | foreach {
@@ -177,6 +182,7 @@ function Get-GitStatus($gitDir = (Get-GitDirectory)) {
             HasWorking      = [bool]$working
             Working         = $working
             HasUntracked    = [bool]$filesAdded
+			SvnRemote       = [bool]$svnRemote
         }
 
         dbg 'Finished' $sw
