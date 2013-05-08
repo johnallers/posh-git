@@ -15,9 +15,17 @@ function prompt {
     # Reset color, which can be messed up by Enable-GitColors
     $Host.UI.RawUI.ForegroundColor = $GitPromptSettings.DefaultForegroundColor
 
-	$parts = $pwd.ProviderPath
 	$backgroundColor = $GitPromptSettings.PathBackgroundColor
-	Write-Host ([System.String]::Join($GitPromptSettings.PathSeperator, $parts.Split([System.IO.Path]::DirectorySeparatorChar))) -nonewline -BackgroundColor $backgroundColor
+	$pieces = $pwd.ProviderPath.Split([System.IO.Path]::DirectorySeparatorChar) | Where {$_ -match "\S"}
+	$path = @()
+	if ($pwd.ProviderPath.Length -gt ($Host.UI.RawUI.WindowSize.Width / 5) -and $pieces.Length -gt 2) {
+		$front = $pieces | Select-Object -first 1
+		$back = $pieces | Select-Object -last 1
+		$path = @($front, $GitPromptSettings.PathCollapseSeperator, $back)
+	} else {
+		$path = $pieces
+	}
+	Write-Host ([System.String]::Join($GitPromptSettings.PathSeperator, $path)) -nonewline -BackgroundColor $backgroundColor
 
     Write-VcsStatus
 

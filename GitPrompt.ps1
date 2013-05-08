@@ -8,6 +8,7 @@ $global:GitPromptSettings = New-Object PSObject -Property @{
 	AheadIndicator            = ([char]0x25B4).ToString()
 	AddedIndicator            = "+"
 	SubversionIndicator       = ([char]0x02E2).ToString()
+	PathCollapseSeperator     = "..."
 	
 	PathBackgroundColor       = [ConsoleColor]::Black
 	PathForegroundColor       = $Host.UI.RawUI.ForegroundColor
