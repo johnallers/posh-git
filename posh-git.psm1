@@ -8,6 +8,8 @@ Push-Location $psScriptRoot
 . .\GitPrompt.ps1
 . .\GitTabExpansion.ps1
 . .\TortoiseGit.ps1
+. .\AppCore.ps1
+
 Pop-Location
 
 if (!$Env:HOME) { $Env:HOME = "$Env:HOMEDRIVE$Env:HOMEPATH" }
@@ -34,6 +36,13 @@ Export-ModuleMember `
         'Add-SshKey',
         'Get-SshPath',
         'Update-AllBranches',
+		'Mount-AppCore',
+		'Dismount-AppCore',
+		'Update-Repository',
+		'Show-Repository',
+		'Push-Repository',
+		'Switch-Branch',
+		'Add-Branch',
         'tgit')
 
 
