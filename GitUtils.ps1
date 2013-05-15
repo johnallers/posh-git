@@ -86,7 +86,7 @@ function Get-GitBranch($gitDir = $(Get-GitDirectory), [Diagnostics.Stopwatch]$sw
     }
 }
 
-function Get-GitStatus($gitDir = (Get-GitDirectory)) {
+function Get-GitStatus($gitDir = (Get-GitDirectory), [bool]$ignoreAppCore = $false) {
     $settings = $Global:GitPromptSettings
     $enabled = (-not $settings) -or $settings.EnablePromptStatus
     if ($enabled -and $gitDir)
@@ -117,7 +117,7 @@ function Get-GitStatus($gitDir = (Get-GitDirectory)) {
         }
 		if ($settings.EnableFileStatus -and !$(InDisabledRepository)) {
 			dbg 'Getting svn status' $sw
-			$svnRemote = Test-Path $gitDir\svn\.metadata -PathType Leaf
+			$svnRemote = Test-Path (Join-Path $gitDir "\svn\.metadata") -PathType Leaf
 		}
 
         dbg 'Parsing status' $sw

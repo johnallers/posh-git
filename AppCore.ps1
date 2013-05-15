@@ -7,6 +7,43 @@ function Get-RepositoryDirectory {
 	return ($gitDir | Split-Path -Parent)
 }
 
+function Test-SvnAvailable {
+	try { svn --version > $null } catch { }
+	return $?
+}
+
+function Get-SvnInfo($repoRoot = $(Get-RepositoryDirectory)) {
+	if ($repoRoot -eq $null) {
+		return
+	}
+	Push-Location $repoRoot
+	(git svn info) |
+	where {$_ -match ":" } | 
+	Foreach-Object -begin {
+			$result = @{}
+		} -process {
+			$result.Add($_.Substring(0, $_.IndexOf(":")),  $_.Substring($_.IndexOf(":")+1).Trim())
+		} -end {
+			$result
+		}
+	Pop-Location
+}
+
+function Test-SvnAuthentication {
+	if (Test-SvnAvailable -ne $true) {
+		Write-Error "svn is not available"
+		return
+	}
+	$svnUrl = (Get-SvnInfo).get_Item("URL")
+	try {svn info --non-interactive "$svnUrl" } catch {}
+	Write-Warning "svn is not authenticated. Run `"svn info`" against the remote to authenticate."
+	return $?
+}
+
+function Set-SvnExternalOnRemote($ExternalPath, $RemoteRepository) {
+	
+}
+
 function Get-AppCoreDirectory {
 	$repoRoot = (Get-RepositoryDirectory)
 	$appCoreConfig = (git config --path --file (Join-Path "$repoRoot" ".gitthycotic") thycotic.appcore.dir) 2> $null
@@ -140,10 +177,19 @@ function Switch-Branch ($BranchName) {
 	}
 }
 
-function Add-Branch ($BranchName) {
+function Get-AppCoreName {
+	$repoRoot = (Get-RepositoryDirectory)
+	$appCoreConfig = (git config --path --file (Join-Path "$repoRoot" ".gitthycotic") thycotic.appcore.dir) 2> $null
+	Write-Host $appCoreConfig
+}
+
+function New-Branch ($BranchName) {
 	if ($BranchName -eq $null) {
 		Write-Error "-BranchName not specified."
 		return
+	}
+	if ((Test-SvnAvailable) -ne $true) {
+		Write-Error "svn required for this command. Use Chocolately to install: `"cinst svn`""
 	}
 	$localName = "local/$BranchName"
 	$repoPath = (Get-RepositoryDirectory)
@@ -153,9 +199,11 @@ function Add-Branch ($BranchName) {
 		Write-Error "Branch $BranchName already exists."
 		return
 	}
+	#Create project branch
 	git svn branch -m "GIT - #0 - Creating new branch" $BranchName
 	$appCore = Get-AppCoreDirectory
 	Pop-Location
+	#Make an appcore branch, if needed.
 	if (Test-Path $appCore -PathType Container) {
 		Push-Location $appCore
 		git svn branch -m "GIT - #0 - Creating new branch" $BranchName

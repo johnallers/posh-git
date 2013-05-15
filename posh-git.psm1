@@ -42,7 +42,11 @@ Export-ModuleMember `
 		'Show-Repository',
 		'Push-Repository',
 		'Switch-Branch',
-		'Add-Branch',
+		'New-Branch',
+		'Get-AppCoreName',
+		'Test-SvnAvailable',
+		'Test-SvnAuthentication',
+		'Get-SvnInfo',
         'tgit')
 
 

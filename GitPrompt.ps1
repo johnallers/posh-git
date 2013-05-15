@@ -74,7 +74,6 @@ function Write-GitStatus($status) {
 		} else {
 			Write-Prompt ($status.Branch + $modifiers + " ") -BackgroundColor $branchBackgroundColor -ForegroundColor $s.DefaultForegroundColor
 		}
-
         if ($WindowTitleSupported -and $s.EnableWindowTitle) {
             if( -not $Global:PreviousWindowTitle ) {
                 $Global:PreviousWindowTitle = $Host.UI.RawUI.WindowTitle
@@ -85,7 +84,6 @@ function Write-GitStatus($status) {
         }
     } elseif ( $Global:PreviousWindowTitle ) {
         $Host.UI.RawUI.WindowTitle = $Global:PreviousWindowTitle
-		#>
     }
 }
 
