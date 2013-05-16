@@ -47,6 +47,7 @@ Export-ModuleMember `
 		'Test-SvnAvailable',
 		'Test-SvnAuthentication',
 		'Get-SvnInfo',
+		'Set-SvnExternal',
         'tgit')
 
 

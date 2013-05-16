@@ -40,8 +40,15 @@ function Test-SvnAuthentication {
 	return $?
 }
 
-function Set-SvnExternalOnRemote($ExternalPath, $RemoteRepository) {
-	
+function Set-SvnExternal($ExternalUrl, $RemoteUrl) {
+	$tempDir = Join-Path $env:temp ([Guid]::NewGuid().ToString("N"))
+	New-Item -ItemType directory $tempDir > $null
+	svn checkout "$RemoteUrl" "$tempDir" --depth 'empty' > $null
+	svn propset "svn:externals" "Thycotic.AppCore $ExternalUrl" "$tempDir"
+	Push-Location $tempDir
+	svn commit --message "GIT - #0 - Setting AppCore external."
+	Pop-Location
+	Remove-Item -Recurse -Force $tempDir
 }
 
 function Get-AppCoreDirectory {
@@ -157,6 +164,7 @@ function Switch-Branch ($BranchName) {
 		git checkout -b $localName $BranchName
 	}
 	$mainCommitUrl = git svn dcommit --dry-run
+	git svn mkdirs
 	Write-Host "Main repository will be $mainCommitUrl"
 	$appCore = Get-AppCoreDirectory
 	Pop-Location
@@ -173,6 +181,7 @@ function Switch-Branch ($BranchName) {
 		}
 		$appCoreCommitUrl = git svn dcommit --dry-run
 		Write-Host "AppCore repository will be $appCoreCommitUrl"
+		git svn mkdirs
 		Pop-Location
 	}
 }
@@ -210,4 +219,15 @@ function New-Branch ($BranchName) {
 		Pop-Location
 	}
 	Switch-Branch $BranchName
+	if (Test-Path $appCore -PathType Container) {
+		Write-Host "Updating svn:externals..."
+		$svnExternalPropSetPath = (Get-SvnInfo -RepoRoot $appCore).get_Item("URL")
+		$appCoreSvnClonePath = (git config --path --file (Join-Path "$repoPath" ".gitthycotic") thycotic.appcore.dir) 2> $null
+		$appCoreHostPath = Join-Path $repoPath $appCoreSvnClonePath -Resolve
+		$svnAppCoreHostPathUrl = (Get-SvnInfo -RepoRoot $appCoreHostPath).get_Item("URL")
+		Set-SvnExternal $svnExternalPropSetPath $svnAppCoreHostPathUrl
+		Push-Location $repoPath
+		git svn rebase
+		Pop-Location
+	}
 }
