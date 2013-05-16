@@ -36,8 +36,9 @@ function Test-SvnAuthentication {
 	}
 	$svnUrl = (Get-SvnInfo).get_Item("URL")
 	try {svn info --non-interactive "$svnUrl" } catch {}
+	$result = $?
 	Write-Warning "svn is not authenticated. Run `"svn info`" against the remote to authenticate."
-	return $?
+	return $result
 }
 
 function Set-SvnExternal($ExternalUrl, $RemoteUrl) {
@@ -186,18 +187,12 @@ function Switch-Branch ($BranchName) {
 	}
 }
 
-function Get-AppCoreName {
-	$repoRoot = (Get-RepositoryDirectory)
-	$appCoreConfig = (git config --path --file (Join-Path "$repoRoot" ".gitthycotic") thycotic.appcore.dir) 2> $null
-	Write-Host $appCoreConfig
-}
-
 function New-Branch ($BranchName) {
 	if ($BranchName -eq $null) {
 		Write-Error "-BranchName not specified."
 		return
 	}
-	if ((Test-SvnAvailable) -ne $true) {
+	if ((Test-SvnAuthentication) -ne $true) {
 		Write-Error "svn required for this command. Use Chocolately to install: `"cinst svn`""
 	}
 	$localName = "local/$BranchName"
