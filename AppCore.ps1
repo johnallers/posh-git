@@ -165,14 +165,14 @@ function Switch-Branch ($BranchName) {
 	if ($BranchName -eq "trunk" -or $BranchName -eq "master") {
 		$localName = "master"
 	} else {
-		$localName = "local/$BranchName"
+		$localName = "$BranchName"
 	}
 	if ($BranchName -eq "trunk") {
 		$BranchName = "master"
 	}
 	$repoPath = (Get-RepositoryDirectory)
 	Push-Location $repoPath
-	$branchExistsLocally = (git branch | where {$_.Trim().EndsWith($localName)} | measure).Count -gt 0
+	$branchExistsLocally = (git branch | where {$_.Trim().Equals($localName)} | measure).Count -gt 0
 	if ($branchExistsLocally) {
 		Write-Host "Checkout out existing branch"
 		git checkout $localName
