@@ -94,6 +94,9 @@ function Dismount-AppCore {
 }
 
 function Update-AppCore {
+	param(
+		[switch] $FetchOnly
+	)
 	$appCore = Get-AppCoreDirectory
 	if ((Test-Path $appCore -PathType Container) -eq $false) {
 		Write-Error "AppCore is not initialized. Use Mount-AppCore."
@@ -101,15 +104,29 @@ function Update-AppCore {
 	}
 	Write-Host "Updating AppCore..."
 	Push-Location $appCore
-	git svn rebase
+	git svn fetch
+	if ($FetchOnly -ne $true) {
+		git svn rebase -l
+	}
 	Pop-Location
 }
 
 function Update-Repository {
+	param(
+		[switch] $FetchOnly
+	)
 	$repoRoot = (Get-RepositoryDirectory)
 	Push-Location $repoRoot
-	git svn rebase
-	Update-AppCore 2> $null
+	git svn fetch
+	if ($FetchOnly -ne $true) {
+		git svn rebase --local
+	}
+	if ($FetchOnly) {
+		Update-AppCore -FetchOnly 2> $null
+	}
+	else {
+		Update-AppCore 2> $null
+	}
 	Pop-Location
 }
 
